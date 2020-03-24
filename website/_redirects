@@ -3,26 +3,32 @@
 # See https://www.netlify.com/docs/redirects/ for documentation. Please do not
 # modify or delete existing redirects without first verifying internally.
 
-/docs/installation.html                         /docs/install
-/docs/command-line/machine-readable.html        /docs/commands
-/docs/command-line/introduction.html            /docs/commands
-/docs/templates/introduction.html               /docs/templates
-/docs/builders/azure-setup.html                 /docs/builders/azure
-/docs/templates/veewee-to-packer.html           /guides/veewee-to-packer
-/docs/extend/developing-plugins.html            /docs/extending/plugins
-/docs/extending/developing-plugins.html         /docs/extending/plugins
-/docs/extend/builder.html                       /docs/extending/custom-builders
-/docs/getting-started/setup.html                /docs/getting-started/install
-/docs/other/community.html                      /community-tools
-/downloads-community.html                       /community-tools
-/community                                      /community
-/community/index.html                           /community
-/docs/other/environmental-variables.html        /docs/other/environment-variables
-/docs/platforms.html                            /docs/builders
-/intro/platforms.html                           /docs/builders
-/docs/templates/configuration-templates.html    /docs/templates/engine
-/docs/machine-readable/*                        /docs/commands
-/docs/command-line/*                            /docs/commands/:splat
-/docs/extend/*                                  /docs/extending/:splat
-/intro/getting-started/install                  /intro/getting-started
-/intro/getting-started/install.html             /intro/getting-started
+/docs/installation.html                           /docs/install
+/docs/command-line/machine-readable.html          /docs/commands
+/docs/command-line/introduction.html              /docs/commands
+/docs/templates/introduction.html                 /docs/templates
+/docs/builders/azure-setup.html                   /docs/builders/azure
+/docs/templates/veewee-to-packer.html             /guides/veewee-to-packer
+/docs/extend/developing-plugins.html              /docs/extending/plugins
+/docs/extending/developing-plugins.html           /docs/extending/plugins
+/docs/extend/builder.html                         /docs/extending/custom-builders
+/docs/getting-started/setup.html                  /docs/getting-started/install
+/docs/other/community.html                        /community-tools
+/downloads-community.html                         /community-tools
+/community                                        /community
+/community/index.html                             /community
+/docs/other/environmental-variables.html          /docs/other/environment-variables
+/docs/platforms.html                              /docs/builders
+/intro/platforms.html                             /docs/builders
+/docs/templates/configuration-templates.html      /docs/templates/engine
+/docs/machine-readable/*                          /docs/commands
+/docs/command-line/*                              /docs/commands/:splat
+/docs/extend/*                                    /docs/extending/:splat
+/intro/getting-started/install                    /intro/getting-started
+/intro/getting-started/install.html               /intro/getting-started
+/docs/basics/terminology                          /docs/terminology
+/docs/basics/terminology.html                     /docs/terminology
+/docs/configuration/from-1.5/:path                /docs/from-1.5/:path
+/docs/configuration/from-1.5/:path/overview       /docs/from-1.5/:path
+/docs/configuration/from-1.5/:path/overview.html  /docs/from-1.5/:path
+
