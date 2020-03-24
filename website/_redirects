@@ -24,3 +24,5 @@
 /docs/machine-readable/*                        /docs/commands
 /docs/command-line/*                            /docs/commands/:splat
 /docs/extend/*                                  /docs/extending/:splat
+/intro/getting-started/install                  /intro/getting-started
+/intro/getting-started/install.html             /intro/getting-started
