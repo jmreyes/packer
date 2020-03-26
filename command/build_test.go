@@ -17,7 +17,7 @@ import (
 	shell_local "github.com/hashicorp/packer/provisioner/shell-local"
 )
 
-func TestBuild_VarArgs(t *testing.T) {
+func TestBuild(t *testing.T) {
 	tc := []struct {
 		name         string
 		args         []string
@@ -25,7 +25,7 @@ func TestBuild_VarArgs(t *testing.T) {
 		fileCheck
 	}{
 		{
-			name: "json - json varfile sets an apple env var",
+			name: "var-args: json - json varfile sets an apple env var",
 			args: []string{
 				"-var-file=" + filepath.Join(testFixture("var-arg"), "apple.json"),
 				filepath.Join(testFixture("var-arg"), "fruit_builder.json"),
@@ -34,7 +34,7 @@ func TestBuild_VarArgs(t *testing.T) {
 		},
 
 		{
-			name: "json - arg sets a pear env var",
+			name: "var-args: json - arg sets a pear env var",
 			args: []string{
 				"-var=fruit=pear",
 				filepath.Join(testFixture("var-arg"), "fruit_builder.json"),
@@ -43,7 +43,7 @@ func TestBuild_VarArgs(t *testing.T) {
 		},
 
 		{
-			name: "json - inexistent var file errs",
+			name: "var-args: json - inexistent var file errs",
 			args: []string{
 				"-var-file=" + filepath.Join(testFixture("var-arg"), "potato.json"),
 				filepath.Join(testFixture("var-arg"), "fruit_builder.json"),
@@ -53,7 +53,7 @@ func TestBuild_VarArgs(t *testing.T) {
 		},
 
 		{
-			name: "hcl - inexistent json var file errs",
+			name: "var-args: hcl - inexistent json var file errs",
 			args: []string{
 				"-var-file=" + filepath.Join(testFixture("var-arg"), "potato.json"),
 				testFixture("var-arg"),
@@ -63,7 +63,7 @@ func TestBuild_VarArgs(t *testing.T) {
 		},
 
 		{
-			name: "hcl - inexistent hcl var file errs",
+			name: "var-args: hcl - inexistent hcl var file errs",
 			args: []string{
 				"-var-file=" + filepath.Join(testFixture("var-arg"), "potato.hcl"),
 				testFixture("var-arg"),
@@ -73,7 +73,7 @@ func TestBuild_VarArgs(t *testing.T) {
 		},
 
 		{
-			name: "hcl - auto varfile sets a chocolate env var",
+			name: "var-args: hcl - auto varfile sets a chocolate env var",
 			args: []string{
 				testFixture("var-arg"),
 			},
@@ -81,7 +81,7 @@ func TestBuild_VarArgs(t *testing.T) {
 		},
 
 		{
-			name: "hcl - hcl varfile sets a apple env var",
+			name: "var-args: hcl - hcl varfile sets a apple env var",
 			args: []string{
 				"-var-file=" + filepath.Join(testFixture("var-arg"), "apple.hcl"),
 				testFixture("var-arg"),
@@ -90,7 +90,7 @@ func TestBuild_VarArgs(t *testing.T) {
 		},
 
 		{
-			name: "hcl - json varfile sets a apple env var",
+			name: "var-args: hcl - json varfile sets a apple env var",
 			args: []string{
 				"-var-file=" + filepath.Join(testFixture("var-arg"), "apple.json"),
 				testFixture("var-arg"),
@@ -99,7 +99,7 @@ func TestBuild_VarArgs(t *testing.T) {
 		},
 
 		{
-			name: "hcl - arg sets a tomato env var",
+			name: "var-args: hcl - arg sets a tomato env var",
 			args: []string{
 				"-var=fruit=tomato",
 				testFixture("var-arg"),
