@@ -3,6 +3,7 @@ package command
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
 	"math"
 	"os"
 	"path/filepath"
@@ -12,6 +13,7 @@ import (
 	"github.com/hashicorp/packer/builder/file"
 	"github.com/hashicorp/packer/builder/null"
 	"github.com/hashicorp/packer/packer"
+	"github.com/hashicorp/packer/post-processor/manifest"
 	shell_local_pp "github.com/hashicorp/packer/post-processor/shell-local"
 	"github.com/hashicorp/packer/provisioner/shell"
 	shell_local "github.com/hashicorp/packer/provisioner/shell-local"
@@ -106,12 +108,45 @@ func TestBuild(t *testing.T) {
 			},
 			fileCheck: fileCheck{expected: []string{"tomato.txt"}},
 		},
+
+		{
+			name: "build name: ",
+			args: []string{
+				"-parallel-builds=1", // to ensure order is kept
+				testFixture("build-name-and-type"),
+			},
+			fileCheck: fileCheck{
+				expectedContent: map[string]string{
+					"manifest.json": `{
+  "builds": [
+    {
+      "name": "test",
+      "builder_type": "null",
+      "files": null,
+      "artifact_id": "Null",
+      "packer_run_uuid": "",
+      "custom_data": null
+    },
+    {
+      "name": "potato",
+      "builder_type": "null",
+      "files": null,
+      "artifact_id": "Null",
+      "packer_run_uuid": "",
+      "custom_data": null
+    }
+  ],
+  "last_run_uuid": ""
+}`,
+				},
+			},
+		},
 	}
 
 	for _, tt := range tc {
 		t.Run(tt.name, func(t *testing.T) {
+			defer tt.cleanup(t)
 			run(t, tt.args, tt.expectedCode)
-			defer cleanup()
 			tt.fileCheck.verify(t)
 		})
 	}
@@ -331,10 +366,28 @@ func run(t *testing.T, args []string, expectedCode int) {
 
 type fileCheck struct {
 	expected, notExpected []string
+	expectedContent       map[string]string
+}
+
+func (fc fileCheck) cleanup(t *testing.T) {
+	for _, file := range fc.expectedFiles() {
+		t.Logf("removing %v", file)
+		if err := os.Remove(file); err != nil {
+			t.Errorf("failed to remove file %s: %v", file, err)
+		}
+	}
+}
+
+func (fc fileCheck) expectedFiles() []string {
+	expected := fc.expected
+	for file := range fc.expectedContent {
+		expected = append(expected, file)
+	}
+	return expected
 }
 
 func (fc fileCheck) verify(t *testing.T) {
-	for _, f := range fc.expected {
+	for _, f := range fc.expectedFiles() {
 		if !fileExists(f) {
 			t.Errorf("Expected to find %s", f)
 		}
@@ -342,6 +395,15 @@ func (fc fileCheck) verify(t *testing.T) {
 	for _, f := range fc.notExpected {
 		if fileExists(f) {
 			t.Errorf("Expected to not find %s", f)
+		}
+	}
+	for file, expectedContent := range fc.expectedContent {
+		content, err := ioutil.ReadFile(file)
+		if err != nil {
+			t.Fatalf("ioutil.ReadFile: %v", err)
+		}
+		if diff := cmp.Diff(expectedContent, string(content)); diff != "" {
+			t.Errorf("content of %s differs: %s", file, diff)
 		}
 	}
 }
@@ -368,6 +430,7 @@ func testCoreConfigBuilder(t *testing.T) *packer.CoreConfig {
 		},
 		PostProcessorStore: packer.MapOfPostProcessor{
 			"shell-local": func() (packer.PostProcessor, error) { return &shell_local_pp.PostProcessor{}, nil },
+			"manifest":    func() (packer.PostProcessor, error) { return &manifest.PostProcessor{}, nil },
 		},
 	}
 	return &packer.CoreConfig{
