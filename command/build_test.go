@@ -15,6 +15,7 @@ import (
 	"github.com/hashicorp/packer/packer"
 	"github.com/hashicorp/packer/post-processor/manifest"
 	shell_local_pp "github.com/hashicorp/packer/post-processor/shell-local"
+	filep "github.com/hashicorp/packer/provisioner/file"
 	"github.com/hashicorp/packer/provisioner/shell"
 	shell_local "github.com/hashicorp/packer/provisioner/shell-local"
 )
@@ -150,6 +151,10 @@ func TestBuild(t *testing.T) {
 				filepath.Join(testFixture("build-name-and-type"), "all.json"),
 			},
 			fileCheck: fileCheck{
+				expected: []string{
+					"null.test.txt",
+					"null.potato.txt",
+				},
 				expectedContent: map[string]string{
 					"manifest.json": `{
   "builds": [
@@ -479,6 +484,7 @@ func testCoreConfigBuilder(t *testing.T) *packer.CoreConfig {
 		ProvisionerStore: packer.MapOfProvisioner{
 			"shell-local": func() (packer.Provisioner, error) { return &shell_local.Provisioner{}, nil },
 			"shell":       func() (packer.Provisioner, error) { return &shell.Provisioner{}, nil },
+			"file":        func() (packer.Provisioner, error) { return &filep.Provisioner{}, nil },
 		},
 		PostProcessorStore: packer.MapOfPostProcessor{
 			"shell-local": func() (packer.PostProcessor, error) { return &shell_local_pp.PostProcessor{}, nil },
