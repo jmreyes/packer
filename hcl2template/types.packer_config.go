@@ -35,6 +35,12 @@ type ValidationOptions struct {
 	Strict bool
 }
 
+const (
+	inputVariablesAccessor = "var"
+	localsAccessor         = "local"
+	sourcesAccessor        = "source"
+)
+
 // EvalContext returns the *hcl.EvalContext that will be passed to an hcl
 // decoder in order to tell what is the actual value of a var or a local and
 // the list of defined functions.
@@ -44,9 +50,9 @@ func (cfg *PackerConfig) EvalContext(variables map[string]cty.Value) *hcl.EvalCo
 	ectx := &hcl.EvalContext{
 		Functions: Functions(cfg.Basedir),
 		Variables: map[string]cty.Value{
-			"var":   cty.ObjectVal(inputVariables),
-			"local": cty.ObjectVal(localVariables),
-			"builder": cty.ObjectVal(map[string]cty.Value{
+			inputVariablesAccessor: cty.ObjectVal(inputVariables),
+			localsAccessor:         cty.ObjectVal(localVariables),
+			sourcesAccessor: cty.ObjectVal(map[string]cty.Value{
 				"type": cty.UnknownVal(cty.String),
 				"name": cty.UnknownVal(cty.String),
 			}),
@@ -244,7 +250,7 @@ func (p *Parser) getBuilds(cfg *PackerConfig) ([]packer.Build, hcl.Diagnostics) 
 			}
 
 			variables := map[string]cty.Value{
-				"builder": cty.ObjectVal(map[string]cty.Value{
+				sourcesAccessor: cty.ObjectVal(map[string]cty.Value{
 					"type": cty.StringVal(src.Type),
 					"name": cty.StringVal(src.Name),
 				}),
