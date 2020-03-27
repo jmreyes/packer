@@ -24,11 +24,47 @@
 /docs/machine-readable/*                          /docs/commands
 /docs/command-line/*                              /docs/commands/:splat
 /docs/extend/*                                    /docs/extending/:splat
+
 /intro/getting-started/install                    /intro/getting-started
 /intro/getting-started/install.html               /intro/getting-started
+
 /docs/basics/terminology                          /docs/terminology
 /docs/basics/terminology.html                     /docs/terminology
+
 /docs/configuration/from-1.5/:path                /docs/from-1.5/:path
 /docs/configuration/from-1.5/:path/overview       /docs/from-1.5/:path
 /docs/configuration/from-1.5/:path/overview.html  /docs/from-1.5/:path
 
+/docs/builders/amazon.html                        /docs/builders/amazon
+/docs/builders/amazon-:path.html                  /docs/builders/amazon/:path
+/docs/builders/amazon-:path                       /docs/builders/amazon/:path
+
+/docs/builders/azure.html                         /docs/builders/azure
+/docs/builders/azure-:path.html                   /docs/builders/azure/:path
+/docs/builders/azure-:path                        /docs/builders/azure/:path
+
+/docs/builders/hyperv.html                        /docs/builders/hyperv
+/docs/builders/hyperv-:path.html                  /docs/builders/hyperv/:path
+/docs/builders/hyperv-:path                       /docs/builders/hyperv/:path
+
+/docs/builders/oracle.html                        /docs/builders/oracle
+/docs/builders/oracle-:path.html                  /docs/builders/oracle/:path
+/docs/builders/oracle-:path                       /docs/builders/oracle/:path
+
+/docs/builders/outscale.html                      /docs/builders/outscale
+/docs/builders/osc-:path.html                     /docs/builders/outscale/:path
+/docs/builders/osc-:path                          /docs/builders/outscale/:path
+
+/docs/builders/parallels.html                     /docs/builders/parallels
+/docs/builders/parallels-:path.html               /docs/builders/parallels/:path
+/docs/builders/parallels-:path                    /docs/builders/parallels/:path
+
+/docs/builders/virtualbox.html                    /docs/builders/virtualbox
+/docs/builders/virtualbox-:path.html              /docs/builders/virtualbox/:path
+/docs/builders/virtualbox-:path                   /docs/builders/virtualbox/:path
+
+/docs/builders/vmware.html                        /docs/builders/vmware
+/docs/builders/vmware-:path.html                  /docs/builders/vmware/:path
+/docs/builders/vmware-:path                       /docs/builders/vmware/:path
+/docs/builders/vsphere-:path.html                 /docs/builders/vmware/vsphere-:path
+/docs/builders/vsphere-:path                      /docs/builders/vmware/vsphere-:path
