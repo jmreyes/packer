@@ -110,7 +110,7 @@ func TestBuild(t *testing.T) {
 		},
 
 		{
-			name: "build name: ",
+			name: "build name: HCL",
 			args: []string{
 				"-parallel-builds=1", // to ensure order is kept
 				testFixture("build-name-and-type"),
@@ -127,6 +127,58 @@ func TestBuild(t *testing.T) {
       "packer_run_uuid": "",
       "custom_data": null
     },
+    {
+      "name": "potato",
+      "builder_type": "null",
+      "files": null,
+      "artifact_id": "Null",
+      "packer_run_uuid": "",
+      "custom_data": null
+    }
+  ],
+  "last_run_uuid": ""
+}`,
+				},
+			},
+		},
+
+		{
+			name: "build name: JSON except potato",
+			args: []string{
+				"-except=potato",
+				"-parallel-builds=1", // to ensure order is kept
+				filepath.Join(testFixture("build-name-and-type"), "all.json"),
+			},
+			fileCheck: fileCheck{
+				expectedContent: map[string]string{
+					"manifest.json": `{
+  "builds": [
+    {
+      "name": "test",
+      "builder_type": "null",
+      "files": null,
+      "artifact_id": "Null",
+      "packer_run_uuid": "",
+      "custom_data": null
+    }
+  ],
+  "last_run_uuid": ""
+}`,
+				},
+			},
+		},
+
+		{
+			name: "build name: JSON only potato",
+			args: []string{
+				"-only=potato",
+				"-parallel-builds=1", // to ensure order is kept
+				filepath.Join(testFixture("build-name-and-type"), "all.json"),
+			},
+			fileCheck: fileCheck{
+				expectedContent: map[string]string{
+					"manifest.json": `{
+  "builds": [
     {
       "name": "potato",
       "builder_type": "null",
