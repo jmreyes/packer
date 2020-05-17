@@ -110,7 +110,13 @@ func TestUploadISO(t *testing.T) {
 			state.Put(downloadPathKey, c.downloadPath)
 			state.Put("proxmoxClient", m)
 
-			step := stepUploadISO{}
+			step := stepUploadISO{
+				ShouldUpload:         c.builderConfig.shouldUploadISO,
+				DownloadPathKey:      downloadPathKey,
+				TargetStoragePathKey: targetPathKey,
+				ISOUrls:              c.builderConfig.ISOUrls,
+				ISOFile:              c.builderConfig.ISOFile,
+			}
 			action := step.Run(context.TODO(), state)
 			step.Cleanup(state)
 

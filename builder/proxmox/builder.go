@@ -38,7 +38,12 @@ func (b *Builder) Prepare(raws ...interface{}) ([]string, []string, error) {
 	return nil, nil, nil
 }
 
-const downloadPathKey = "downloaded_iso_path"
+const (
+	downloadPathKey      = "downloaded_iso_path"
+	targetPathKey        = "iso_file"
+	downloadPathKeyExtra = "downloaded_iso_path_extra"
+	targetPathKeyExtra   = "iso_file_extra"
+)
 
 func (b *Builder) Run(ctx context.Context, ui packer.Ui, hook packer.Hook) (packer.Artifact, error) {
 	var err error
@@ -73,7 +78,29 @@ func (b *Builder) Run(ctx context.Context, ui packer.Ui, hook packer.Hook) (pack
 			TargetPath:   b.config.TargetPath,
 			Url:          b.config.ISOUrls,
 		},
-		&stepUploadISO{},
+		&common.StepDownload{
+			Checksum:     b.config.extraISOConfig.ISOChecksum,
+			ChecksumType: b.config.extraISOConfig.ISOChecksumType,
+			Description:  "ISO",
+			Extension:    b.config.TargetExtension,
+			ResultKey:    downloadPathKeyExtra,
+			TargetPath:   b.config.TargetPath,
+			Url:          b.config.extraISOConfig.ISOUrls,
+		},
+		&stepUploadISO{
+			ShouldUpload:         b.config.shouldUploadISO,
+			DownloadPathKey:      downloadPathKey,
+			TargetStoragePathKey: targetPathKey,
+			ISOUrls:              b.config.ISOUrls,
+			ISOFile:              b.config.ISOFile,
+		},
+		&stepUploadISO{
+			ShouldUpload:         b.config.shouldUploadExtraISO,
+			DownloadPathKey:      downloadPathKeyExtra,
+			TargetStoragePathKey: targetPathKeyExtra,
+			ISOUrls:              b.config.extraISOConfig.ISOUrls,
+			ISOFile:              b.config.ISOFileExtra,
+		},
 		&stepStartVM{},
 		&common.StepHTTPServer{
 			HTTPDir:     b.config.HTTPDir,

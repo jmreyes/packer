@@ -40,28 +40,36 @@ type Config struct {
 	VMName string `mapstructure:"vm_name"`
 	VMID   int    `mapstructure:"vm_id"`
 
-	Memory         int          `mapstructure:"memory"`
-	Cores          int          `mapstructure:"cores"`
-	CPUType        string       `mapstructure:"cpu_type"`
-	Sockets        int          `mapstructure:"sockets"`
-	OS             string       `mapstructure:"os"`
-	VGA            vgaConfig    `mapstructure:"vga"`
-	NICs           []nicConfig  `mapstructure:"network_adapters"`
-	Disks          []diskConfig `mapstructure:"disks"`
-	ISOFile        string       `mapstructure:"iso_file"`
-	ISOStoragePool string       `mapstructure:"iso_storage_pool"`
-	Agent          bool         `mapstructure:"qemu_agent"`
-	SCSIController string       `mapstructure:"scsi_controller"`
-	Onboot         bool         `mapstructure:"onboot"`
+	Memory               int          `mapstructure:"memory"`
+	Cores                int          `mapstructure:"cores"`
+	CPUType              string       `mapstructure:"cpu_type"`
+	Sockets              int          `mapstructure:"sockets"`
+	OS                   string       `mapstructure:"os"`
+	VGA                  vgaConfig    `mapstructure:"vga"`
+	NICs                 []nicConfig  `mapstructure:"network_adapters"`
+	Disks                []diskConfig `mapstructure:"disks"`
+	ISOFile              string       `mapstructure:"iso_file"`
+	ISOFileExtra         string       `mapstructure:"iso_file_extra"`
+	ISOUrlExtra          string       `mapstructure:"iso_url_extra"`
+	ISOChecksumExtra     string       `mapstructure:"iso_checksum_extra"`
+	ISOChecksumURLExtra  string       `mapstructure:"iso_checksum_url_extra"`
+	ISOChecksumTypeExtra string       `mapstructure:"iso_checksum_type_extra"`
+	ISOStoragePool       string       `mapstructure:"iso_storage_pool"`
+	Agent                bool         `mapstructure:"qemu_agent"`
+	SCSIController       string       `mapstructure:"scsi_controller"`
+	Onboot               bool         `mapstructure:"onboot"`
 
 	TemplateName        string `mapstructure:"template_name"`
 	TemplateDescription string `mapstructure:"template_description"`
 	UnmountISO          bool   `mapstructure:"unmount_iso"`
+	UnmountExtraISO     bool   `mapstructure:"unmount_extra_iso"`
 
 	CloudInit            bool   `mapstructure:"cloud_init"`
 	CloudInitStoragePool string `mapstructure:"cloud_init_storage_pool"`
 
-	shouldUploadISO bool
+	shouldUploadISO      bool
+	shouldUploadExtraISO bool
+	extraISOConfig       common.ISOConfig
 
 	ctx interpolate.Context
 }
@@ -202,11 +210,29 @@ func (c *Config) Prepare(raws ...interface{}) ([]string, error) {
 		c.shouldUploadISO = true
 	}
 
+	if c.ISOFileExtra != "" {
+		c.shouldUploadExtraISO = false
+	} else if c.ISOUrlExtra != "" {
+		c.extraISOConfig = common.ISOConfig{
+			RawSingleISOUrl: c.ISOUrlExtra,
+			ISOChecksum:     c.ISOChecksumExtra,
+			ISOChecksumURL:  c.ISOChecksumURLExtra,
+			ISOChecksumType: c.ISOChecksumTypeExtra,
+		}
+		isoWarnings, isoErrors := c.extraISOConfig.Prepare(&c.ctx)
+		errs = packer.MultiErrorAppend(errs, isoErrors...)
+		warnings = append(warnings, isoWarnings...)
+		c.shouldUploadExtraISO = true
+	}
+
 	if (c.ISOFile == "" && len(c.ISOConfig.ISOUrls) == 0) || (c.ISOFile != "" && len(c.ISOConfig.ISOUrls) != 0) {
 		errs = packer.MultiErrorAppend(errs, errors.New("either iso_file or iso_url, but not both, must be specified"))
 	}
-	if len(c.ISOConfig.ISOUrls) != 0 && c.ISOStoragePool == "" {
-		errs = packer.MultiErrorAppend(errs, errors.New("when specifying iso_url, iso_storage_pool must also be specified"))
+	if c.ISOFileExtra != "" && c.ISOUrlExtra != "" {
+		errs = packer.MultiErrorAppend(errs, errors.New("either iso_file_extra or iso_url_extra, but not both, can be specified"))
+	}
+	if (len(c.ISOConfig.ISOUrls) != 0 || c.ISOUrlExtra != "") && c.ISOStoragePool == "" {
+		errs = packer.MultiErrorAppend(errs, errors.New("when specifying iso_url or iso_url_extra, iso_storage_pool must also be specified"))
 	}
 
 	// Required configurations that will display errors if not set

@@ -13,7 +13,13 @@ import (
 )
 
 // stepUploadISO uploads an ISO file to Proxmox so we can boot from it
-type stepUploadISO struct{}
+type stepUploadISO struct {
+	ShouldUpload         bool
+	DownloadPathKey      string
+	TargetStoragePathKey string
+	ISOUrls              []string
+	ISOFile              string
+}
 
 type uploader interface {
 	Upload(node string, storage string, contentType string, filename string, file io.Reader) error
@@ -26,12 +32,12 @@ func (s *stepUploadISO) Run(ctx context.Context, state multistep.StateBag) multi
 	client := state.Get("proxmoxClient").(uploader)
 	c := state.Get("config").(*Config)
 
-	if !c.shouldUploadISO {
-		state.Put("iso_file", c.ISOFile)
+	if !s.ShouldUpload {
+		state.Put(s.TargetStoragePathKey, s.ISOFile)
 		return multistep.ActionContinue
 	}
 
-	p := state.Get(downloadPathKey).(string)
+	p := state.Get(s.DownloadPathKey).(string)
 	if p == "" {
 		err := fmt.Errorf("Path to downloaded ISO was empty")
 		state.Put("error", err)
@@ -48,7 +54,8 @@ func (s *stepUploadISO) Run(ctx context.Context, state multistep.StateBag) multi
 		return multistep.ActionHalt
 	}
 
-	filename := filepath.Base(c.ISOUrls[0])
+	filename := filepath.Base(s.ISOUrls[0])
+	ui.Say(fmt.Sprintf("Uploading %s...", filename))
 	err = client.Upload(c.Node, c.ISOStoragePool, "iso", filename, r)
 	if err != nil {
 		state.Put("error", err)
@@ -57,7 +64,7 @@ func (s *stepUploadISO) Run(ctx context.Context, state multistep.StateBag) multi
 	}
 
 	isoStoragePath := fmt.Sprintf("%s:iso/%s", c.ISOStoragePool, filename)
-	state.Put("iso_file", isoStoragePath)
+	state.Put(s.TargetStoragePathKey, isoStoragePath)
 
 	return multistep.ActionContinue
 }
